@@ -58,20 +58,12 @@
       "turma": "teste",
       "id": 1
     },
-    
     {
       "nome": "joão",
       "email": "joão@gmail.com",
       "ra": "teste",
       "turma": "teste",
       "id": 27
-    },
-    {
-      "nome": "Maria Silva",
-      "email": "maria@gmail.com",
-      "ra": "teste",
-      "turma": "teste",
-      "id": 28
     }
   ]
 }

@@ -30,10 +30,13 @@
             {{ aluno.turma }}
           </td>
           <td>
-            <a href="#">
+            <a
+              @click="(modalEditar = true), carregarInfo($event, aluno)"
+              href="#"
+            >
               <img src="@/assets/editar.svg" />
             </a>
-            <a href="#">
+            <a @click="deletarAluno($event, aluno.id)" href="#">
               <img src="@/assets/excluir.svg" alt="" />
             </a>
           </td>
@@ -83,6 +86,52 @@
         </form>
       </div>
     </Modal>
+    <Modal v-if="modalEditar">
+      <div class="modal">
+        <div class="modal__header">
+          <h3 class="modal__header__title">Editar dados dos alunos</h3>
+          <a href="#" @click="modalEditar = false">
+            <img src="@/assets/mdi_close.png" />
+          </a>
+        </div>
+        <form @submit="editarAluno" class="modal__form">
+          <input
+            type="text"
+            placeholder="Nome do aluno"
+            v-model="editar.nome"
+            class="modal__form__input"
+          />
+          <input
+            type="email"
+            placeholder="E-mail do aluno"
+            v-model="editar.email"
+            class="modal__form__input"
+          />
+          <input
+            type="text"
+            placeholder="RA do aluno"
+            v-model="editar.ra"
+            class="modal__form__input"
+          />
+          <input
+            type="text"
+            placeholder="Turma do aluno"
+            v-model="editar.turma"
+            class="modal__form__input"
+          />
+          <button class="modal__form__btn-voltar" @click="modalEditar = false">
+            Voltar
+          </button>
+          <button
+            @click="modalEditar = false"
+            type="submit"
+            class="modal__form__btn"
+          >
+            Editar
+          </button>
+        </form>
+      </div>
+    </Modal>
   </div>
 </template>
 
@@ -97,7 +146,15 @@ export default {
       ra: "",
       turma: "",
       modal: false,
+      modalEditar: false,
       alunos: [],
+      editar: {
+        id: "",
+        nome: "",
+        email: "",
+        ra: "",
+        turma: "",
+      },
     };
   },
   components: {
@@ -115,6 +172,7 @@ export default {
         ra: this.ra,
         turma: this.turma,
       });
+      this.modal = false;
       this.carregarAlunos();
       this.nome = "";
       this.email = "";
@@ -124,6 +182,33 @@ export default {
     async carregarAlunos() {
       const { data } = await axios.get("http://localhost:3000/alunos");
       this.alunos = data;
+    },
+    async deletarAluno(e, id) {
+      e.preventDefault();
+
+      const { data } = await axios.delete(`http://localhost:3000/alunos/${id}`);
+      this.carregarAlunos();
+    },
+    carregarInfo(e, aluno) {
+      e.preventDefault();
+      this.editar.id = aluno.id;
+      this.editar.nome = aluno.nome;
+      this.editar.email = aluno.email;
+      this.editar.ra = aluno.ra;
+      this.editar.turma = aluno.turma;
+    },
+    async editarAluno(e) {
+      e.preventDefault();
+      const { data } = await axios.put(
+        `http://localhost:3000/alunos/${this.editar.id}`,
+        {
+          nome: this.editar.nome,
+          email: this.editar.email,
+          ra: this.editar.ra,
+          turma: this.editar.turma,
+        }
+      );
+      this.carregarAlunos();
     },
   },
 };
@@ -256,6 +341,22 @@ export default {
         transition: 800ms;
         &:hover {
           background: #096e64;
+        }
+      }
+      &__btn-voltar {
+        border: 1px solid #fff;
+        border-radius: 5px;
+        outline: 0;
+        background: transparent;
+        color: #fff;
+        padding: 10px;
+        width: 116px;
+        margin-right: 10px;
+        transition: 800ms;
+        cursor: pointer;
+        &:hover {
+          background: #096e64;
+          color: #fff;
         }
       }
     }
